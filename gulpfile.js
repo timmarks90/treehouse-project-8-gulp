@@ -1,5 +1,6 @@
 'use strict';
 
+// Required gulp dev dependencies
 const gulp = require('gulp');
 const concat = require('gulp-concat');
 const minify = require('gulp-uglify');
@@ -34,23 +35,26 @@ gulp.task('styles', () => {
     .pipe(gulp.dest('dist/styles'));
 })
 
+// gulp images to reduce file size of images and copy into dist/content folder
 gulp.task('images', () => {
     return gulp.src('images/*')
     .pipe(img())
     .pipe(gulp.dest('dist/content'));
 })
 
-//watch for changes to any .scss file and run gulp styles when a change is detected to cimpile, concatenate, and minify to dist folder
+// watch for changes to any .scss file and run gulp styles when a change is detected to cimpile, concatenate, and minify to dist folder
 gulp.task('watchSass', () => {
     gulp.watch('sass/*.scss', ['styles']);
 })
 
+// delete all of the files and folders in the dist folder
 gulp.task('clean', () => {
     return del(['dist/']);
 })
 
 gulp.task("build", ['clean', 'scripts', 'styles', 'images']);
 
+// watch start local server on port 3000
 gulp.task('serve', ['watchSass'], () => {
     return gulp.src('dist/')
         .pipe(server({
@@ -61,6 +65,7 @@ gulp.task('serve', ['watchSass'], () => {
         }));
 });
 
+// default gulp setings
 gulp.task("default", ['clean'], () => {
     gulp.start('build', 'serve');
 });
