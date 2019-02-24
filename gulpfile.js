@@ -6,6 +6,9 @@ const minify = require('gulp-uglify');
 const rename = require('gulp-rename');
 const sass = require('gulp-sass');
 const maps = require('gulp-sourcemaps');
+const del = require('del');
+const img = require('gulp-image');
+const server = require('gulp-webserver');
 
 // gulp scripts to generate source map, concatenate, and minify to dist/scripts folder
 gulp.task('scripts', () => {
@@ -31,11 +34,33 @@ gulp.task('styles', () => {
     .pipe(gulp.dest('dist/styles'));
 })
 
-//watch for changes to any .scss file and run gulp styles when a change is detected to cimpile, concatenate, and minify to dist folder
-gulp.task('watchSass', () => {
-    gulp.watch('sass/**/*.scss', ['styles']);
+gulp.task('images', () => {
+    return gulp.src('images/*')
+    .pipe(img())
+    .pipe(gulp.dest('dist/content'));
 })
 
-gulp.task("build", ['scripts', 'styles']);
+//watch for changes to any .scss file and run gulp styles when a change is detected to cimpile, concatenate, and minify to dist folder
+gulp.task('watchSass', () => {
+    gulp.watch('sass/*.scss', ['styles']);
+})
 
-gulp.task("default", ["build"]);
+gulp.task('clean', () => {
+    return del(['dist/']);
+})
+
+gulp.task("build", ['clean', 'scripts', 'styles', 'images']);
+
+gulp.task('serve', ['watchSass'], () => {
+    return gulp.src('dist/')
+        .pipe(server({
+            livereload: true,
+            port: 3000,
+            directoryListing: true,
+            open: true
+        }));
+});
+
+gulp.task("default", ['clean'], () => {
+    gulp.start('build', 'serve');
+});
