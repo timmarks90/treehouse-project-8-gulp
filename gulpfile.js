@@ -45,25 +45,29 @@ gulp.task('watchSass', () => {
     gulp.watch('sass/*.scss', ['styles']);
 });
 
+gulp.task('html', () => {
+    return gulp.src("index.html")
+    .pipe(gulp.dest('dist/'));
+});
+
 // delete all of the files and folders in the dist folder
 gulp.task('clean', () => {
     return del(['dist/']);
 });
 
-gulp.task("build", ['clean', 'scripts', 'styles', 'images']);
+gulp.task("build", ['clean', 'scripts', 'styles', 'images', 'html']);
 
 // watch start local server on port 3000
 gulp.task('serve', ['watchSass'], () => {
-    return gulp.src('dist/')
+    return gulp.src('./')
         .pipe(server({
-            livereload: true,
             port: 3000,
-            directoryListing: true,
-            open: true
+            livereload: true,
+            open: 'http://localhost:3000'
         }));
 });
 
 // default gulp setings
-gulp.task("default", ['clean'], () => {
-    gulp.start('build', 'serve');
+gulp.task("default", ['build'], () => {
+    gulp.start('serve');
 });
